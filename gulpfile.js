@@ -1,9 +1,6 @@
-// generated on 2021-07-13 using generator-webapp 4.0.0-8
+// generated on 2021-07-14 using generator-webapp 4.0.0-8
 const { src, dest, watch, series, parallel, lastRun } = require('gulp');
 const gulpLoadPlugins = require('gulp-load-plugins');
-const fs = require('fs');
-const mkdirp = require('mkdirp');
-const Modernizr = require('modernizr');
 const browserSync = require('browser-sync');
 const del = require('del');
 const autoprefixer = require('autoprefixer');
@@ -50,35 +47,6 @@ function scripts() {
     .pipe(server.reload({stream: true}));
 };
 
-async function modernizr() {
-  const readConfig = () => new Promise((resolve, reject) => {
-    fs.readFile(`${__dirname}/modernizr.json`, 'utf8', (err, data) => {
-      if (err) reject(err);
-      resolve(JSON.parse(data));
-    })
-  })
-  const createDir = () => new Promise((resolve, reject) => {
-    mkdirp(`${__dirname}/.tmp/scripts`, err => {
-      if (err) reject(err);
-      resolve();
-    })
-  });
-  const generateScript = config => new Promise((resolve, reject) => {
-    Modernizr.build(config, content => {
-      fs.writeFile(`${__dirname}/.tmp/scripts/modernizr.js`, content, err => {
-        if (err) reject(err);
-        resolve(content);
-      });
-    })
-  });
-
-  const [config] = await Promise.all([
-    readConfig(),
-    createDir()
-  ]);
-  await generateScript(config);
-}
-
 const lintBase = (files, options) => {
   return src(files)
     .pipe($.eslint(options))
@@ -86,10 +54,12 @@ const lintBase = (files, options) => {
     .pipe($.eslint.format())
     .pipe($.if(!server.active, $.eslint.failAfterError()));
 }
+
 function lint() {
   return lintBase('app/scripts/**/*.js', { fix: true })
     .pipe(dest('app/scripts'));
 };
+
 function lintTest() {
   return lintBase('test/spec/**/*.js');
 };
@@ -97,7 +67,7 @@ function lintTest() {
 function html() {
   return src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
-    .pipe($.if(/\.js$/, $.uglify({compress: {drop_console: true}})))
+    .pipe($.if(/\.js$/, $.terser({compress: {drop_console: true}})))
     .pipe($.if(/\.css$/, $.postcss([cssnano({safe: true, autoprefixer: false})])))
     .pipe($.if(/\.html$/, $.htmlmin({
       collapseWhitespace: true,
@@ -113,14 +83,19 @@ function html() {
 }
 
 function images() {
-  return src('app/images/**/*', { since: lastRun(images) })
+  return src('app/assets/images/**/*', { since: lastRun(images) })
     .pipe($.imagemin())
-    .pipe(dest('dist/images'));
+    .pipe(dest('dist/assets/images'));
 };
 
 function fonts() {
-  return src('app/fonts/**/*.{eot,svg,ttf,woff,woff2}')
-    .pipe($.if(!isProd, dest('.tmp/fonts'), dest('dist/fonts')));
+  return src('app/assets/fonts/**/*.{eot,svg,ttf,woff,woff2}')
+    .pipe($.if(!isProd, dest('.tmp/assets/fonts'), dest('dist/assets/fonts')));
+};
+
+function stubs() {
+  return src('app/assets/stubs/**/*')
+  .pipe($.if(!isProd, dest('.tmp/assets/stubs'), dest('dist/assets/stubs')));
 };
 
 function extras() {
@@ -145,9 +120,10 @@ const build = series(
   clean,
   parallel(
     lint,
-    series(parallel(styles, scripts, modernizr), html),
+    series(parallel(styles, scripts), html),
     images,
     fonts,
+    stubs,
     extras
   ),
   measureSize
@@ -167,14 +143,15 @@ function startAppServer() {
 
   watch([
     'app/*.html',
-    'app/images/**/*',
-    '.tmp/fonts/**/*'
+    'app/assets/images/**/*',
+    '.tmp/assets/fonts/**/*',
+    '.tmp/assets/stubs/**/*',
   ]).on('change', server.reload);
 
   watch('app/styles/**/*.scss', styles);
   watch('app/scripts/**/*.js', scripts);
-  watch('modernizr.json', modernizr);
-  watch('app/fonts/**/*', fonts);
+  watch('app/assets/fonts/**/*', fonts);
+  watch('app/assets/stubs/**/*', stubs);
 }
 
 function startTestServer() {
@@ -211,7 +188,7 @@ function startDistServer() {
 
 let serve;
 if (isDev) {
-  serve = series(clean, parallel(styles, scripts, modernizr, fonts), startAppServer);
+  serve = series(clean, parallel(styles, scripts, fonts, stubs), startAppServer);
 } else if (isTest) {
   serve = series(clean, scripts, startTestServer);
 } else if (isProd) {
