@@ -1,12 +1,20 @@
 /**
  * 
+ * @returns {string}
+ */
+function uuidv4() {
+    const a = crypto.getRandomValues(new Uint16Array(8));
+    let i = 0;
+    return '00-0-4-1-000'.replace(/[^-]/g, s => (a[i++] + s * 0x10000 >> s).toString(16).padStart(4, '0'));
+}
+
+/**
+ * 
  * @param {*} data 
  * @param {*} coordinates 
  */
 function update(data, coordinates) {
-    console.log("/*** UPDATE ***/");
-    console.log(data);
-    console.log(coordinates);
+
 }
 
 /**
@@ -29,7 +37,7 @@ function init(data) {
         .append('svg')
         .attr('width', window.innerWidth)
         .attr('height', window.innerHeight)
-        .attr('id', 'svg-root');
+        .attr('id', uuidv4());
 
     // create isosceles triangle by dataset
     svg.append('g')
@@ -41,9 +49,9 @@ function init(data) {
             return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
         })
         .attr('fill', function(d) { return d.tone; })
-        .attr('stroke-width', '1')
+        .attr('stroke-width', '3')
         .attr('stroke', 'black')
-        .on('click', function(d) {
+        .on('click', function(d, i) {
             // update svg if the event is x
             if(evt && evt.key === 'x') {
                 update(data, { x: d.x, y: d.y });
