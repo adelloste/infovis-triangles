@@ -4,7 +4,7 @@ var evt    = null,
     margin = { top: 10, right: 10, bottom: 10, left: 10 };
 
 // create svg
-var svg = d3.select("body")
+var svg = d3.select('body')
     .on('keydown', function(k) {
         // set keyword event
         evt = k;
@@ -111,11 +111,11 @@ function draw() {
     });
     // enter clause: add new elements
     triangles.enter().append('path')  
-        .attr("class", "triangle")
+        .attr('class', 'triangle')
         .attr('d', function(d) {
             return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
         })
-        .attr("fill", function(d){ return d3.rgb(d.x, d.y, d.tone); })
+        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); })
         .attr('stroke-width', '2')
         .attr('stroke', 'black')
         .on('click', function(d, i) {
@@ -134,7 +134,7 @@ function draw() {
         .attr('d', function(d) {
             return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
         })
-        .attr("fill", function(d){ return d3.rgb(d.x, d.y, d.tone); });
+        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
 }
 
 // get data-cases
