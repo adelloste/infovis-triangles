@@ -41,7 +41,7 @@ npm install
 * `npm run start` - to preview and watch for changes
 * `npm run build` - to build your webapp for production
 * `npm run serve:dist` - to preview the production build
-* `npm run deploy` - to build the project and deploy
+* `npm run deploy` - to build your webapp for production and deploy
 
 **[⬆ back to top](#table-of-contents)**
 
