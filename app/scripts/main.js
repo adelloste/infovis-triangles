@@ -30,7 +30,7 @@ function uuidv4() {
 }
 
 /**
- * update data
+ * check point inside triangle
  * https://stackoverflow.com/a/47723459/3751473
  * @param {*} ax 
  * @param {*} ay 
@@ -51,7 +51,7 @@ function triangleContains(ax, ay, bx, by, cx, cy, x, y) {
 }
 
 /**
- * 
+ * update data
  * @param {*} o 
  * @param {*} coordinates 
  * @param {*} prop 
