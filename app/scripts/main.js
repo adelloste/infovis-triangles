@@ -138,7 +138,7 @@ function draw() {
 }
 
 // get data-cases
-d3.json('/assets/stubs/triangles.json').then(
+d3.json('assets/stubs/triangles.json').then(
     function(res) {
         // add id for each data-case
         data = d3.map(res, function(d) { 
