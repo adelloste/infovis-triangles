@@ -1,5 +1,6 @@
 {
   "private": true,
+  "description": "A basic example with d3.js",
   "engines": {
     "node": ">=4"
   },
@@ -18,17 +19,20 @@
     "cross-env": "^5.2.0",
     "cssnano": "^4.1.10",
     "del": "^4.1.1",
+    "fancy-log": "^1.3.3",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-cli": "^2.2.0",
     "gulp-eslint": "^5.0.0",
     "gulp-filter": "^6.0.0",
+    "gulp-gh-pages": "^0.5.4",
     "gulp-htmlmin": "^5.0.1",
     "gulp-if": "^2.0.2",
     "gulp-imagemin": "^6.0.0",
     "gulp-load-plugins": "^1.6.0",
     "gulp-plumber": "^1.2.1",
     "gulp-postcss": "^8.0.0",
+    "gulp-replace": "^1.1.3",
     "gulp-sass": "^4.0.2",
     "gulp-size": "^3.0.0",
     "gulp-terser": "^2.0.1",
@@ -43,7 +47,12 @@
     "start": "gulp serve",
     "build": "cross-env NODE_ENV=production gulp",
     "test": "npm run serve:test",
+    "deploy": "cross-env NODE_ENV=deploy gulp release",
     "tasks": "gulp --tasks"
+  },
+  "author": {
+    "name": "Alessandro Dell'Oste",
+    "email": "alessandro.delloste1@gmail.com"
   },
   "browserslist": [
     "> 1%",
