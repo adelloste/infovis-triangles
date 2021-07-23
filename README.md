@@ -8,8 +8,8 @@ D3.js - INFOVIS
 * [Clone the repo](#clone-the-repo)
 * [Install npm packages](#install-npm-packages)
 * [Npm scripts](#npm-scripts)
-* [Demo](#demo)
 * [Goal](#goal)
+* [Demo](#demo)
 
 ### Getting Started
 
@@ -45,12 +45,6 @@ npm install
 
 **[⬆ back to top](#table-of-contents)**
 
-### Demo
-
-Published site at https://adelloste.github.io/infovis-triangles/
-
-**[⬆ back to top](#table-of-contents)**
-
 ### Goal
 
 Crea un file json con dei dati multivariati: ci sono 10 data-cases e
@@ -72,5 +66,11 @@ colore dei triangoli avvengano con un'animazione fluida. Usa le scale
 D3.js per mappare l'intervallo dei valori delle variabili (che è
 arbitrario) sull'intervallo dei valori delle coordinate, che dipende
 dalla tua interfaccia.
+
+**[⬆ back to top](#table-of-contents)**
+
+### Demo
+
+Published site at https://adelloste.github.io/infovis-triangles/
 
 **[⬆ back to top](#table-of-contents)**
