@@ -1,5 +1,15 @@
 {
   "presets": [
-    "@babel/preset-env"
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry",
+        "corejs": {
+          "version": 3,
+          "shippedProposals": true,
+          "proposals": true
+        }
+      }
+    ]
   ]
 }

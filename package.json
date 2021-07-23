@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
+    "core-js": "^3.15.2",
     "d3": "^6.7.0",
     "jquery": "^3.4.1",
     "popper.js": "^1.15.0"
@@ -54,11 +55,6 @@
     "name": "Alessandro Dell'Oste",
     "email": "alessandro.delloste1@gmail.com"
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "Firefox ESR"
-  ],
   "eslintConfig": {
     "parserOptions": {
       "ecmaVersion": 2018,
