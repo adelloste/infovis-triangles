@@ -1,7 +1,15 @@
 // init
 var evt    = null,
     data   = null,
-    margin = { top: 10, right: 10, bottom: 10, left: 10 };
+    margin = { top: 10, right: 10, bottom: 10, left: 10 },
+    width  = 800 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+// scale for x-axis
+var xScale = d3.scaleLinear().range([0, width]);
+
+// scale for y-axis
+var yScale = d3.scaleLinear().range([height, 30]);
 
 // create svg
 var svg = d3.select('body')
@@ -14,6 +22,8 @@ var svg = d3.select('body')
         evt = null;
     })
     .append('svg')
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     .attr('id', uuidv4())
     .attr('class', 'root-svg')
     .append('g')
@@ -48,6 +58,38 @@ function triangleContains(ax, ay, bx, by, cx, cy, x, y) {
     return  det * ((bx - ax) * (y - ay) - (by - ay) * (x - ax)) > 0 &&
             det * ((cx - bx) * (y - by) - (cy - by) * (x - bx)) > 0 &&
             det * ((ax - cx) * (y - cy) - (ay - cy) * (x - cx)) > 0;
+}
+
+/**
+ * update xScale domain
+ */
+function updateXScaleDomain() {
+    // create array of maxs
+    var maxs = data.reduce(function (accumulator, currentValue) {
+        return accumulator.concat([currentValue.x, currentValue.x + currentValue.width])
+    }, []);
+    // create array of mins
+    var mins = data.reduce(function (accumulator, currentValue) {
+        return accumulator.concat([currentValue.x, currentValue.x - (currentValue.width / 2)])
+    }, []);
+    // update domain
+    xScale.domain([d3.min(mins), d3.max(maxs)]);
+}
+
+/**
+ * update yScale domain
+ */
+function updateYScaleDomain() {
+    // create array of values
+    var maxs = data.reduce(function (accumulator, currentValue) {
+        return accumulator.concat([currentValue.y, currentValue.y + currentValue.height])
+    }, []);
+    // create array of mins
+    var mins = data.reduce(function (accumulator, currentValue) {
+        return accumulator.concat([currentValue.y, currentValue.y - currentValue.height])
+    }, []);
+    // update domain
+    yScale.domain([d3.min(mins), d3.max(maxs)]);
 }
 
 /**
@@ -105,6 +147,9 @@ function update(o, coordinates, prop) {
  * Draw 
  */
 function draw() {
+    // update domain
+    updateXScaleDomain();
+    updateYScaleDomain();
     // data join
     var triangles = svg.selectAll('.triangle').data(data, function(d) {
         return d.id;
@@ -113,9 +158,13 @@ function draw() {
     triangles.enter().append('path')  
         .attr('class', 'triangle')
         .attr('d', function(d) {
-            return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
+            var ax = xScale(d.x),
+                ay = yScale(d.y),
+                bx = xScale(d.x + (d.width / 2)),
+                by = yScale(d.y + d.height);
+            return 'M ' + ax + ' ' + ay + ' l ' + (bx - ax) + ' ' + (ay - by) + ' l -' + ((bx - ax) * 2) + ' 0 z';
         })
-        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); })
+        .attr('fill', function(d) { return d3.rgb(d.x, d.y, d.tone); })
         .attr('stroke-width', '2')
         .attr('stroke', 'black')
         .on('click', function(d, i) {
@@ -128,13 +177,13 @@ function draw() {
                 update(i, { x: d.x, y: d.y }, 'y');
             }
         });
-    // enter + update clause
-    triangles.transition()
-        .duration(500)
-        .attr('d', function(d) {
-            return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
-        })
-        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
+    // // enter + update clause
+    // triangles.transition()
+    //     .duration(500)
+    //     .attr('d', function(d) {
+    //         return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
+    //     })
+    //     .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
 }
 
 // get data-cases
