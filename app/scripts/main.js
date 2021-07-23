@@ -2,14 +2,14 @@
 var evt    = null,
     data   = null,
     margin = { top: 10, right: 10, bottom: 10, left: 10 },
-    width  = 800 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    width  = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
 // scale for x-axis
 var xScale = d3.scaleLinear().range([0, width]);
 
 // scale for y-axis
-var yScale = d3.scaleLinear().range([height, 30]);
+var yScale = d3.scaleLinear().range([height, 50]);
 
 // create svg
 var svg = d3.select('body')
@@ -22,8 +22,8 @@ var svg = d3.select('body')
         evt = null;
     })
     .append('svg')
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
     .attr('id', uuidv4())
     .attr('class', 'root-svg')
     .append('g')
@@ -65,11 +65,11 @@ function triangleContains(ax, ay, bx, by, cx, cy, x, y) {
  */
 function updateXScaleDomain() {
     // create array of maxs
-    var maxs = data.reduce(function (accumulator, currentValue) {
+    let maxs = data.reduce(function (accumulator, currentValue) {
         return accumulator.concat([currentValue.x, currentValue.x + currentValue.width])
     }, []);
     // create array of mins
-    var mins = data.reduce(function (accumulator, currentValue) {
+    let mins = data.reduce(function (accumulator, currentValue) {
         return accumulator.concat([currentValue.x, currentValue.x - (currentValue.width / 2)])
     }, []);
     // update domain
@@ -81,11 +81,11 @@ function updateXScaleDomain() {
  */
 function updateYScaleDomain() {
     // create array of values
-    var maxs = data.reduce(function (accumulator, currentValue) {
+    let maxs = data.reduce(function (accumulator, currentValue) {
         return accumulator.concat([currentValue.y, currentValue.y + currentValue.height])
     }, []);
     // create array of mins
-    var mins = data.reduce(function (accumulator, currentValue) {
+    let mins = data.reduce(function (accumulator, currentValue) {
         return accumulator.concat([currentValue.y, currentValue.y - currentValue.height])
     }, []);
     // update domain
@@ -100,7 +100,7 @@ function updateYScaleDomain() {
  */
 function update(o, coordinates, prop) {
     // init points triangle
-    var ax = o.x, 
+    let ax = o.x, 
         ay = o.y,
         bx = o.x + (o.width / 2),
         by = o.y + o.height,
@@ -151,14 +151,14 @@ function draw() {
     updateXScaleDomain();
     updateYScaleDomain();
     // data join
-    var triangles = svg.selectAll('.triangle').data(data, function(d) {
+    let triangles = svg.selectAll('.triangle').data(data, function(d) {
         return d.id;
     });
     // enter clause: add new elements
     triangles.enter().append('path')  
         .attr('class', 'triangle')
         .attr('d', function(d) {
-            var ax = xScale(d.x),
+            let ax = xScale(d.x),
                 ay = yScale(d.y),
                 bx = xScale(d.x + (d.width / 2)),
                 by = yScale(d.y + d.height);
@@ -177,13 +177,17 @@ function draw() {
                 update(i, { x: d.x, y: d.y }, 'y');
             }
         });
-    // // enter + update clause
-    // triangles.transition()
-    //     .duration(500)
-    //     .attr('d', function(d) {
-    //         return 'M ' + d.x + ' ' + d.y + ' l ' + (d.width / 2) + ' ' + d.height + ' l -' + d.width + ' 0 z';
-    //     })
-    //     .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
+    // enter + update clause
+    triangles.transition()
+        .duration(500)
+        .attr('d', function(d) {
+            let ax = xScale(d.x),
+                ay = yScale(d.y),
+                bx = xScale(d.x + (d.width / 2)),
+                by = yScale(d.y + d.height);
+            return 'M ' + ax + ' ' + ay + ' l ' + (bx - ax) + ' ' + (ay - by) + ' l -' + ((bx - ax) * 2) + ' 0 z';
+        })
+        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
 }
 
 // get data-cases
