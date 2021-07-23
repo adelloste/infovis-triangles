@@ -21,7 +21,7 @@ This project was generated with [generator-webapp](https://github.com/yeoman/gen
 
 ```shell
 git clone https://github.com/adelloste/infovis-triangles.git
-cd ain
+cd infovis-triangles
 ```
 
 **[⬆ back to top](#table-of-contents)**
