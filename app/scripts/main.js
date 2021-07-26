@@ -6,10 +6,10 @@ var evt    = null,
     height = 500 - margin.top - margin.bottom;
 
 // scale for x-axis
-var xScale = d3.scaleLinear().range([0, width]);
+var xScale = d3.scaleLinear().range([0, width]).interpolate(d3.interpolateRound);
 
 // scale for y-axis
-var yScale = d3.scaleLinear().range([height, 50]);
+var yScale = d3.scaleLinear().range([height, 50]).interpolate(d3.interpolateRound);
 
 // create svg
 var svg = d3.select('body')
@@ -40,56 +40,41 @@ function uuidv4() {
 }
 
 /**
- * check point inside triangle
- * https://stackoverflow.com/a/47723459/3751473
- * @param {*} ax 
- * @param {*} ay 
- * @param {*} bx 
- * @param {*} by 
- * @param {*} cx 
- * @param {*} cy 
- * @param {*} x 
- * @param {*} y 
- * @returns {boolean}
- */
-function triangleContains(ax, ay, bx, by, cx, cy, x, y) {
-    let det = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
-	
-    return  det * ((bx - ax) * (y - ay) - (by - ay) * (x - ax)) > 0 &&
-            det * ((cx - bx) * (y - by) - (cy - by) * (x - bx)) > 0 &&
-            det * ((ax - cx) * (y - cy) - (ay - cy) * (x - cx)) > 0;
-}
-
-/**
  * update xScale domain
  */
 function updateXScaleDomain() {
-    // create array of maxs
-    let maxs = data.reduce(function (accumulator, currentValue) {
-        return accumulator.concat([currentValue.x, currentValue.x + currentValue.width])
-    }, []);
-    // create array of mins
-    let mins = data.reduce(function (accumulator, currentValue) {
-        return accumulator.concat([currentValue.x, currentValue.x - (currentValue.width / 2)])
-    }, []);
     // update domain
-    xScale.domain([d3.min(mins), d3.max(maxs)]);
+    xScale.domain([0, d3.max(data, function(d) { return d.x + d.width; })]);
 }
 
 /**
  * update yScale domain
  */
 function updateYScaleDomain() {
-    // create array of values
-    let maxs = data.reduce(function (accumulator, currentValue) {
-        return accumulator.concat([currentValue.y, currentValue.y + currentValue.height])
-    }, []);
-    // create array of mins
-    let mins = data.reduce(function (accumulator, currentValue) {
-        return accumulator.concat([currentValue.y, currentValue.y - currentValue.height])
-    }, []);
     // update domain
-    yScale.domain([d3.min(mins), d3.max(maxs)]);
+    yScale.domain([0, d3.max(data, function(d) { return d.y + d.height; })]);
+}
+
+/**
+ * return points
+ * @param {*} d 
+ * @returns 
+ */
+ function points(d) {
+    return [
+        {
+            x: d.x,
+            y: d.y
+        },
+        {
+            x: d.x + (d.width / 2),
+            y: d.y + d.height,
+        },
+        {
+            x: d.x + d.width,
+            y:d.y
+        }
+    ];
 }
 
 /**
@@ -99,15 +84,20 @@ function updateYScaleDomain() {
  * @param {*} prop 
  */
 function update(o, coordinates, prop) {
-    // init points triangle
-    let ax = o.x, 
-        ay = o.y,
-        bx = o.x + (o.width / 2),
-        by = o.y + o.height,
-        cx = o.x - (o.width / 2),
-        cy = o.y + o.height;
+    // append point
+    svg.append('circle')
+        .attr('r', 4)
+        .attr('cx', coordinates.x - 10)
+        .attr('cy', coordinates.y - 10)
+        .attr('fill', 'red');
+    // get polygon
+    var polygon = points(o).map(
+        function(d) {
+            return [xScale(d.x), yScale(d.y)];
+        }
+    );
     // check if the click is inside
-    if(triangleContains(ax, ay, bx, by, cx, cy, coordinates.x, coordinates.y)) {
+    if(d3.polygonContains(polygon, [coordinates.x - 10, coordinates.y - 10])) {
         // the clicked point is internal so update the color
         data = d3.map(data, function(d) {
             return {
@@ -119,7 +109,7 @@ function update(o, coordinates, prop) {
     }
     else {
         // base
-        if(coordinates.y === (o.y + o.height)) {
+        if((coordinates.y - 10) === yScale(o.y)) {
             data = d3.map(data, function(d) {
                 return {
                     ...d,
@@ -155,15 +145,17 @@ function draw() {
         return d.id;
     });
     // enter clause: add new elements
-    triangles.enter().append('path')  
-        .attr('class', 'triangle')
-        .attr('d', function(d) {
-            let ax = xScale(d.x),
-                ay = yScale(d.y),
-                bx = xScale(d.x + (d.width / 2)),
-                by = yScale(d.y + d.height);
-            return 'M ' + ax + ' ' + ay + ' l ' + (bx - ax) + ' ' + (ay - by) + ' l -' + ((bx - ax) * 2) + ' 0 z';
+    triangles.enter()
+        .append('polygon')
+        .attr('points', function(d) { 
+            return points(d).map(
+                function(d) {
+                    return [xScale(d.x), yScale(d.y)].join(',');
+                }
+            ).join(' ');
         })
+        .attr('id', function(d) { return d.id; })
+        .attr('class', 'triangle')
         .attr('fill', function(d) { return d3.rgb(d.x, d.y, d.tone); })
         .attr('stroke-width', '2')
         .attr('stroke', 'black')
@@ -180,14 +172,14 @@ function draw() {
     // enter + update clause
     triangles.transition()
         .duration(500)
-        .attr('d', function(d) {
-            let ax = xScale(d.x),
-                ay = yScale(d.y),
-                bx = xScale(d.x + (d.width / 2)),
-                by = yScale(d.y + d.height);
-            return 'M ' + ax + ' ' + ay + ' l ' + (bx - ax) + ' ' + (ay - by) + ' l -' + ((bx - ax) * 2) + ' 0 z';
+        .attr('points', function(d) {
+            return points(d).map(
+                function(d) {
+                    return [xScale(d.x), yScale(d.y)].join(',');
+                }
+            ).join(' ');
         })
-        .attr('fill', function(d){ return d3.rgb(d.x, d.y, d.tone); });
+        .attr('fill', function(d) { return d3.rgb(d.x, d.y, d.tone); });
 }
 
 // get data-cases
