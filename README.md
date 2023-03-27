@@ -1,49 +1,6 @@
 # infovis-triangles
 
-D3.js - INFOVIS
-
-## Table of contents
-
-* [Getting Started](#getting-started)
-* [Clone the repo](#clone-the-repo)
-* [Install npm packages](#install-npm-packages)
-* [Npm scripts](#npm-scripts)
-* [Goal](#goal)
-* [Demo](#demo)
-
-### Getting Started
-
-This project was generated with [generator-webapp](https://github.com/yeoman/generator-webapp) version 4.0.0-8
-
-**[⬆ back to top](#table-of-contents)**
-
-### Clone the repo
-
-```shell
-git clone https://github.com/adelloste/infovis-triangles.git
-cd infovis-triangles
-```
-
-**[⬆ back to top](#table-of-contents)**
-
-### Install npm packages
-
-Install packages described in` package.json`
-
-```shell
-npm install
-```
-
-**[⬆ back to top](#table-of-contents)**
-
-### Npm scripts
-
-* `npm run start` - to preview and watch for changes
-* `npm run build` - to build webapp for production
-* `npm run serve:dist` - to preview the production build
-* `npm run deploy` - to build webapp for production and deploy
-
-**[⬆ back to top](#table-of-contents)**
+A basic example with d3.js
 
 ### Goal
 
@@ -67,10 +24,6 @@ D3.js per mappare l'intervallo dei valori delle variabili (che è
 arbitrario) sull'intervallo dei valori delle coordinate, che dipende
 dalla tua interfaccia.
 
-**[⬆ back to top](#table-of-contents)**
-
 ### Demo
 
 Published site at https://adelloste.github.io/infovis-triangles/
-
-**[⬆ back to top](#table-of-contents)**

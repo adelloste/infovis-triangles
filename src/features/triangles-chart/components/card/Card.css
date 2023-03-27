@@ -1,0 +1,13 @@
+.card {
+  background: #FFFFFF;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  width: 100%;
+  /* max-width: 1200px;
+  height: 650px;
+  border-radius: 5px;
+  margin: 0 auto; */
+}
+
+.container {
+  padding: 2px 16px;
+}
