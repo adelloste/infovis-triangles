@@ -1,5 +1,5 @@
-import React from "react";
-import "./Card.css";
+import React from 'react';
+import './Card.css';
 
 type Props = {
   children: React.ReactNode;
